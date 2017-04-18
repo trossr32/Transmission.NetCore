@@ -30,9 +30,6 @@ C# implementation of the Transmission RPC API for .Net CORE
 
 How to use
 -------------
-
-Install Nuget Package: `PM> Install-Package Transmission.API.RPC`
-
 ```C#
 //Add using Transmission.API.RPC;
 
