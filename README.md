@@ -1,5 +1,5 @@
 # Transmission.NetCore
-.Net Core Transmission client library 
+[![Build Status](https://travis-ci.org/Beatlegger/Transmission.NetCore.svg?branch=master)](https://travis-ci.org/Beatlegger/Transmission.NetCore)
 
 C# implementation of the Transmission RPC API for .Net CORE
 
