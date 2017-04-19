@@ -1,2 +1,7 @@
 language: csharp
-solution: Transsmission.NetCore.sln
+dist: trusty
+sudo: required
+mono: none
+dotnet: 1.1.0
+script:
+  - ./build.sh --quiet verify
