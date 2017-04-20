@@ -1,5 +1,6 @@
 # Transmission.NetCore
 [![Build Status](https://travis-ci.org/Beatlegger/Transmission.NetCore.svg?branch=master)](https://travis-ci.org/Beatlegger/Transmission.NetCore)
+[![NuGet](https://img.shields.io/nuget/v/Nuget.Core.svg)](https://www.nuget.org/packages/Transmission.NetCore.Client/)
 
 C# implementation of the Transmission RPC API for .Net CORE
 
@@ -27,6 +28,12 @@ C# implementation of the Transmission RPC API for .Net CORE
 | queue-move-down      |   | x |
 | queue-move-bottom    |   | x |
 | free-space           |   | x |
+
+Install
+-------------
+```
+PM> Install-Package Transmission.NetCore.Client
+```
 
 How to use
 -------------
