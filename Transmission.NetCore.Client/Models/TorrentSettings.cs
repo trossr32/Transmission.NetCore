@@ -1,7 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Transmission.NetCore.Client.Models
 {
@@ -34,7 +31,7 @@ namespace Transmission.NetCore.Client.Models
         /// Torrent id array
         /// </summary>
         [JsonProperty("ids")]
-        public int[] IDs { get; set; }
+        public int[] Ids { get; set; }
 
         /// <summary>
         /// New location of the torrent's content

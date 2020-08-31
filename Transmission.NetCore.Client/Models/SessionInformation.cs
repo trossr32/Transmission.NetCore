@@ -1,7 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Transmission.NetCore.Client.Models
 {
@@ -11,7 +8,7 @@ namespace Transmission.NetCore.Client.Models
         /// Number of rules in the blocklist
         /// </summary>
         [JsonProperty("blocklist-size")]
-        public int BlocklistSize { get; set; }
+        public int BlockListSize { get; set; }
 
         /// <summary>
         /// Location of transmission's configuration directory

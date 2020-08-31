@@ -32,7 +32,7 @@ namespace Transmission.NetCore.Client.Models
         /// <returns></returns>
         public T Deserialize<T>()
         {
-            var argumentsString = JsonConvert.SerializeObject(this.Arguments);
+            var argumentsString = JsonConvert.SerializeObject(Arguments);
             return JsonConvert.DeserializeObject<T>(argumentsString);
         }
     }

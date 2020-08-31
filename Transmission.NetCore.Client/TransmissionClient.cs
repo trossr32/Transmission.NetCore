@@ -2,43 +2,38 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
+using Flurl.Http;
 using Transmission.NetCore.Client.Models;
 
 namespace Transmission.NetCore.Client
 {
     public class TransmissionClient
     {
-        public string Host { get; private set; }
-        public string SessionID { get; private set; }
-        public int CurrentTag { get; private set; }
+        private string Host { get; set; }
+        private string SessionId { get; set; }
+        private string Login { get; set; }
+        private string Password { get; set; }
+        private int CurrentTag { get; set; }
 
-        private string _authorization;
-        private bool _needAuthorization;
+        private readonly bool _needAuthorization;
 
         /// <summary>
 		/// Initialize client
 		/// </summary>
-		/// <param name="host">Host adresse</param>
-		/// <param name="sessionID">Session ID</param>
+		/// <param name="host">Host address</param>
+		/// <param name="sessionId">Session id</param>
 		/// <param name="login">Login</param>
 		/// <param name="password">Password</param>
-		public TransmissionClient(string host, string sessionID = null, string login = null, string password = null)
+		public TransmissionClient(string host, string sessionId = null, string login = null, string password = null)
         {
-            this.Host = host;
-            this.SessionID = sessionID;
+            Host = host;
+            SessionId = sessionId;
+            Login = login;
+            Password = password;
 
-            if (!String.IsNullOrWhiteSpace(login))
-            {
-                var authBytes = Encoding.UTF8.GetBytes(login + ":" + password);
-                var encoded = Convert.ToBase64String(authBytes);
-
-                this._authorization = String.Format("Basic {0}", encoded);
-                this._needAuthorization = true;
-            }
+            _needAuthorization = !string.IsNullOrWhiteSpace(login);
         }
 
         #region Session
@@ -49,7 +44,8 @@ namespace Transmission.NetCore.Client
         public async void SessionCloseAsync()
         {
             var request = new TransmissionRequest("session-close", null);
-            var response = await SendRequestAsync(request);
+            
+            await SendRequestAsync(request);
         }
 
         /// <summary>
@@ -59,7 +55,8 @@ namespace Transmission.NetCore.Client
         public async void SessionSetAsync(SessionSettings settings)
         {
             var request = new TransmissionRequest("session-set", settings.ToDictionary());
-            var response = await SendRequestAsync(request);
+            
+            await SendRequestAsync(request);
         }
 
         /// <summary>
@@ -69,9 +66,9 @@ namespace Transmission.NetCore.Client
         public async Task<Statistic> SessionGetStatisticAsync()
         {
             var request = new TransmissionRequest("session-stats", null);
-            var response = await SendRequestAsync(request);
-            var result = response.Deserialize<Statistic>();
-            return result;
+            TransmissionResponse response = await SendRequestAsync(request);
+            
+            return response.Deserialize<Statistic>();
         }
 
         /// <summary>
@@ -81,9 +78,9 @@ namespace Transmission.NetCore.Client
         public async Task<SessionInformation> SessionGetAsync()
         {
             var request = new TransmissionRequest("session-get", null);
-            var response = await SendRequestAsync(request);
-            var result = response.Deserialize<SessionInformation>();
-            return result;
+            TransmissionResponse response = await SendRequestAsync(request);
+            
+            return response.Deserialize<SessionInformation>();
         }
 
         #endregion
@@ -92,37 +89,40 @@ namespace Transmission.NetCore.Client
         /// <summary>
         /// Add torrent (API: torrent-add)
         /// </summary>
+        /// <param name="torrent"></param>
         /// <returns>Torrent info (ID, Name and HashString)</returns>
         public async Task<CreatedTorrent> TorrentAddAsync(NewTorrent torrent)
         {
-            if (String.IsNullOrWhiteSpace(torrent.Metainfo) && String.IsNullOrWhiteSpace(torrent.Filename))
+            if (string.IsNullOrWhiteSpace(torrent.MetaInfo) && string.IsNullOrWhiteSpace(torrent.Filename))
                 throw new Exception("Either \"filename\" or \"metainfo\" must be included.");
 
             var request = new TransmissionRequest("torrent-add", torrent.ToDictionary());
-            var response = await SendRequestAsync(request);
-            var jObject = response.Deserialize<JObject>();
 
-            if (jObject == null || jObject.First == null)
+            TransmissionResponse response = await SendRequestAsync(request);
+
+            JObject jObject = response.Deserialize<JObject>();
+
+            if (jObject?.First == null)
                 return null;
 
-            CreatedTorrent result = null;
-
             if (jObject.TryGetValue("torrent-duplicate", out JToken value))
-                result = JsonConvert.DeserializeObject<CreatedTorrent>(value.ToString());
-            else if (jObject.TryGetValue("torrent-added", out value))
-                result = JsonConvert.DeserializeObject<CreatedTorrent>(value.ToString());
+                return JsonConvert.DeserializeObject<CreatedTorrent>(value.ToString());
+            
+            if (jObject.TryGetValue("torrent-added", out value))
+                return JsonConvert.DeserializeObject<CreatedTorrent>(value.ToString());
 
-            return result;
+            return null;
         }
 
         /// <summary>
         /// Set torrent params (API: torrent-set)
         /// </summary>
-        /// <param name="torrentSet">New torrent params</param>
+        /// <param name="settings">New torrent params</param>
         public async void TorrentSetAsync(TorrentSettings settings)
         {
             var request = new TransmissionRequest("torrent-set", settings.ToDictionary());
-            var response = await SendRequestAsync(request);
+            
+            await SendRequestAsync(request);
         }
 
         /// <summary>
@@ -144,16 +144,15 @@ namespace Transmission.NetCore.Client
             var request = new TransmissionRequest("torrent-get", arguments);
 
             var response = await SendRequestAsync(request);
-            var result = response.Deserialize<Torrents>();
-
-            return result;
+            
+            return response.Deserialize<Torrents>();
         }
 
         /// <summary>
         /// Remove torrents
         /// </summary>
         /// <param name="ids">Torrents id</param>
-        /// <param name="deleteLocalData">Remove local data</param>
+        /// <param name="deleteData">Remove local data</param>
         public async void TorrentRemoveAsync(int[] ids, bool deleteData = false)
         {
             var arguments = new Dictionary<string, object>
@@ -163,7 +162,8 @@ namespace Transmission.NetCore.Client
             };
 
             var request = new TransmissionRequest("torrent-remove", arguments);
-            var response = await SendRequestAsync(request);
+            
+            await SendRequestAsync(request);
         }
 
         /// <summary>
@@ -178,7 +178,8 @@ namespace Transmission.NetCore.Client
             };
 
             var request = new TransmissionRequest("torrent-start", arguments);
-            var response = await SendRequestAsync(request);
+            
+            await SendRequestAsync(request);
         }
 
         /// <summary>
@@ -193,7 +194,8 @@ namespace Transmission.NetCore.Client
             };
 
             var request = new TransmissionRequest("torrent-start-now", arguments);
-            var response = await SendRequestAsync(request);
+            
+            await SendRequestAsync(request);
         }
 
         /// <summary>
@@ -208,7 +210,8 @@ namespace Transmission.NetCore.Client
             };
 
             var request = new TransmissionRequest("torrent-stop", arguments);
-            var response = await SendRequestAsync(request);
+            
+            await SendRequestAsync(request);
         }
 
         /// <summary>
@@ -223,7 +226,8 @@ namespace Transmission.NetCore.Client
             };
 
             var request = new TransmissionRequest("torrent-verify", arguments);
-            var response = await SendRequestAsync(request);
+            
+            await SendRequestAsync(request);
         }
 
         /// <summary>
@@ -238,7 +242,8 @@ namespace Transmission.NetCore.Client
             };
 
             var request = new TransmissionRequest("queue-move-top", arguments);
-            var response = await SendRequestAsync(request);
+            
+            await SendRequestAsync(request);
         }
 
         /// <summary>
@@ -253,7 +258,8 @@ namespace Transmission.NetCore.Client
             };
 
             var request = new TransmissionRequest("queue-move-up", arguments);
-            var response = await SendRequestAsync(request);
+            
+            await SendRequestAsync(request);
         }
 
         /// <summary>
@@ -268,7 +274,8 @@ namespace Transmission.NetCore.Client
             };
 
             var request = new TransmissionRequest("queue-move-down", arguments);
-            var response = await SendRequestAsync(request);
+            
+            await SendRequestAsync(request);
         }
 
         /// <summary>
@@ -283,7 +290,8 @@ namespace Transmission.NetCore.Client
             };
 
             var request = new TransmissionRequest("queue-move-bottom", arguments);
-            var response = await SendRequestAsync(request);
+            
+            await SendRequestAsync(request);
         }
 
         /// <summary>
@@ -300,31 +308,32 @@ namespace Transmission.NetCore.Client
                 { "location", location },
                 { "move", move }
             };
+
             var request = new TransmissionRequest("torrent-set-location", arguments);
-            var response = await SendRequestAsync(request);
+            
+            await SendRequestAsync(request);
         }
 
         /// <summary>
         /// Rename a file or directory in a torrent (API: torrent-rename-path)
         /// </summary>
-        /// <param name="ids">The torrent whose path will be renamed</param>
+        /// <param name="id">The torrent whose path will be renamed</param>
         /// <param name="path">The path to the file or folder that will be renamed</param>
         /// <param name="name">The file or folder's new name</param>
         public async Task<RenamedTorrent> TorrentRenamePathAsync(int id, string path, string name)
         {
             var arguments = new Dictionary<string, object>
             {
-                { "ids", new int[] { id } },
+                { "ids", new[] { id } },
                 { "path", path },
                 { "name", name }
             };
 
             var request = new TransmissionRequest("torrent-rename-path", arguments);
-            var response = await SendRequestAsync(request);
+            
+            TransmissionResponse response = await SendRequestAsync(request);
 
-            var result = response.Deserialize<RenamedTorrent>();
-
-            return result;
+            return response.Deserialize<RenamedTorrent>();
         }
         #endregion
 
@@ -337,74 +346,62 @@ namespace Transmission.NetCore.Client
         public async Task<bool> PortTestAsync()
         {
             var request = new TransmissionRequest("port-test", null);
-            var response = await SendRequestAsync(request);
 
-            var data = response.Deserialize<JObject>();
-            var result = (bool)data.GetValue("port-is-open");
-            return result;
+            TransmissionResponse response = await SendRequestAsync(request);
+
+            JObject data = response.Deserialize<JObject>();
+            
+            return (bool)data.GetValue("port-is-open");
         }
 
         #endregion
 
+        /// <summary>
+        /// Perform the Transmission API request
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         private async Task<TransmissionResponse> SendRequestAsync(TransmissionRequest request)
         {
-            TransmissionResponse result = new TransmissionResponse();
+            TransmissionResponse result;
 
             request.Tag = ++CurrentTag;
 
             try
             {
-
-                byte[] byteArray = Encoding.UTF8.GetBytes(request.ToJson());
-
-                //Prepare http web request
-                HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(Host);
-
-                webRequest.ContentType = "application/json-rpc";
-                //webRequest.Headers.Add("X-Transmission-Session-Id:" + SessionID);
-                webRequest.Headers["X-Transmission-Session-Id"] = SessionID;
-                webRequest.Method = "POST";
-                //webRequest.ContentLength = byteArray.Length;
-
                 if (_needAuthorization)
-                    webRequest.Headers["Authorization"] = _authorization;
-
-                using (Stream dataStream = await webRequest.GetRequestStreamAsync())
                 {
-                    dataStream.Write(byteArray, 0, byteArray.Length);
-                }
-
-                //Send request and prepare response
-                using (var webResponse = await webRequest.GetResponseAsync())
-                {
-                    using (Stream responseStream = webResponse.GetResponseStream())
-                    {
-                        var reader = new StreamReader(responseStream, Encoding.UTF8);
-                        var responseString = reader.ReadToEnd();
-                        result = Newtonsoft.Json.JsonConvert.DeserializeObject<TransmissionResponse>(responseString);
-
-                        if (result.Result != "success")
-                            throw new Exception(result.Result);
-                    }
-                }
-            }
-            catch (WebException ex)
-            {
-                if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.Conflict)
-                {
-                    if (ex.Response.Headers.AllKeys.Length > 0)
-                    {
-                        //If session id expiried, try get session id and send request
-                        SessionID = ex.Response.Headers["X-Transmission-Session-Id"];
-
-                        if (SessionID == null)
-                            throw new Exception("Session ID Error");
-
-                        result = await SendRequestAsync(request);
-                    }
+                    result = await Host
+                        .WithBasicAuth(Login, Password)
+                        .WithHeader("Accept", "application/json-rpc")
+                        .WithHeader("X-Transmission-Session-Id", SessionId)
+                        .PostJsonAsync(request)
+                        .ReceiveJson<TransmissionResponse>();
                 }
                 else
-                    throw ex;
+                {
+                    result = await Host
+                        .WithHeader("Accept", "application/json-rpc")
+                        .WithHeader("X-Transmission-Session-Id", SessionId)
+                        .PostJsonAsync(request)
+                        .ReceiveJson<TransmissionResponse>();
+                }
+
+                if (result.Result != "success")
+                    throw new Exception(result.Result);
+            }
+            catch (FlurlHttpException e)
+            {
+                if (e.Call.Response.StatusCode != HttpStatusCode.Conflict)
+                    throw;
+
+                SessionId = e.Call.Response.GetHeaderValue("X-Transmission-Session-Id");
+
+                if (SessionId == null)
+                    throw new Exception("Session id error");
+
+                // repeat request with retrieved session id
+                result = await SendRequestAsync(request);
             }
 
             return result;

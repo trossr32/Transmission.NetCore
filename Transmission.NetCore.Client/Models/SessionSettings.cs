@@ -1,7 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Transmission.NetCore.Client.Models
 {
@@ -53,19 +50,19 @@ namespace Transmission.NetCore.Client.Models
         /// Location of the blocklist to use for "blocklist-update"
         /// </summary>
         [JsonProperty("blocklist-url")]
-        public string BlocklistURL { get; set; }
+        public string BlockListUrl { get; set; }
 
         /// <summary>
         /// True means enabled
         /// </summary>
         [JsonProperty("blocklist-enabled")]
-        public bool? BlocklistEnabled { get; set; }
+        public bool? BlockListEnabled { get; set; }
 
         /// <summary>
         /// Maximum size of the disk cache (MB)
         /// </summary>
         [JsonProperty("cache-size-mb")]
-        public int? CacheSizeMB { get; set; }
+        public int? CacheSizeMb { get; set; }
 
         /// <summary>
         /// Default path to download torrents
@@ -89,7 +86,7 @@ namespace Transmission.NetCore.Client.Models
         /// True means allow dht in public torrents
         /// </summary>
         [JsonProperty("dht-enabled")]
-        public bool? DHTEnabled { get; set; }
+        public bool? DhtEnabled { get; set; }
 
         /// <summary>
         /// "required", "preferred", "tolerated"
@@ -125,7 +122,7 @@ namespace Transmission.NetCore.Client.Models
         /// True means allow Local Peer Discovery in public torrents
         /// </summary>
         [JsonProperty("lpd-enabled")]
-        public bool? LPDEnabled { get; set; }
+        public bool? LpdEnabled { get; set; }
 
         /// <summary>
         /// Maximum global number of peers

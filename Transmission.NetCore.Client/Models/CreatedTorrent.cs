@@ -1,7 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Transmission.NetCore.Client.Models
 {
@@ -14,7 +11,7 @@ namespace Transmission.NetCore.Client.Models
         /// Torrent ID
         /// </summary>
         [JsonProperty("id")]
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Torrent name
@@ -27,6 +24,5 @@ namespace Transmission.NetCore.Client.Models
         /// </summary>
         [JsonProperty("hashString")]
         public string HashString { get; set; }
-
     }
 }

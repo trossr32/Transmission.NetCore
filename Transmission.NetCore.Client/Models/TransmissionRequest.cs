@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Transmission.NetCore.Client.Models
 {
@@ -18,8 +16,8 @@ namespace Transmission.NetCore.Client.Models
 
         public TransmissionRequest(string method, Dictionary<string, object> arguments)
         {
-            this.Method = method;
-            this.Arguments = arguments;
+            Method = method;
+            Arguments = arguments;
         }
     }
 }

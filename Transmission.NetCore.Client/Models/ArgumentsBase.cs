@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
@@ -15,7 +13,7 @@ namespace Transmission.NetCore.Client.Models
         {
             var result = new Dictionary<string, object>();
 
-            var type = this.GetType();
+            var type = GetType();
             var properties = type.GetProperties();
 
             foreach (var prop in properties)
@@ -33,7 +31,7 @@ namespace Transmission.NetCore.Client.Models
                 if (propJsonAttrArg == null)
                     continue;
 
-                var argName = propJsonAttrArg.Value as String;
+                var argName = propJsonAttrArg.Value as string;
                 var argValue = prop.GetValue(this);
 
                 if (argValue == null)

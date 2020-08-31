@@ -1,7 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Transmission.NetCore.Client.Models
 {
@@ -32,7 +29,7 @@ namespace Transmission.NetCore.Client.Models
         /// base64-encoded .torrent content
         /// </summary>
         [JsonProperty("metainfo")]
-        public string Metainfo { get; set; }
+        public string MetaInfo { get; set; }
 
         /// <summary>
         /// if true, don't start the torrent

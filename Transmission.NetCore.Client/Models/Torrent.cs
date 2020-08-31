@@ -1,7 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Transmission.NetCore.Client.Models
 {
@@ -14,7 +11,7 @@ namespace Transmission.NetCore.Client.Models
         /// The torrent's unique Id.
         /// </summary>
         [JsonProperty("id")]
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         [JsonProperty("addedDate")]
         public int AddedDate { get; set; }
@@ -59,10 +56,10 @@ namespace Transmission.NetCore.Client.Models
         public string ErrorString { get; set; }
 
         [JsonProperty("eta")]
-        public int ETA { get; set; }
+        public int Eta { get; set; }
 
         [JsonProperty("etaIdle")]
-        public int ETAIdle { get; set; }
+        public int EtaIdle { get; set; }
 
         [JsonProperty("files")]
         public TorrentFiles[] Files { get; set; }
@@ -206,10 +203,10 @@ namespace Transmission.NetCore.Client.Models
         public bool[] Wanted { get; set; }
 
         [JsonProperty("webseeds")]
-        public string[] Webseeds { get; set; }
+        public string[] WebSeeds { get; set; }
 
         [JsonProperty("webseedsSendingToUs")]
-        public int WebseedsSendingToUs { get; set; }
+        public int WebSeedsSendingToUs { get; set; }
     }
 
     public class TorrentFiles
@@ -263,7 +260,7 @@ namespace Transmission.NetCore.Client.Models
         public bool IsUploadingTo { get; set; }
 
         [JsonProperty("isUTP")]
-        public bool IsUTP { get; set; }
+        public bool IsUtp { get; set; }
 
         [JsonProperty("peerIsChoked")]
         public bool PeerIsChoked { get; set; }
@@ -287,19 +284,19 @@ namespace Transmission.NetCore.Client.Models
     public class TorrentPeersFrom
     {
         [JsonProperty("fromDht")]
-        public int FromDHT { get; set; }
+        public int FromDht { get; set; }
 
         [JsonProperty("fromIncoming")]
         public int FromIncoming { get; set; }
 
         [JsonProperty("fromLpd")]
-        public int FromLPD { get; set; }
+        public int FromLpd { get; set; }
 
         [JsonProperty("fromLtep")]
-        public int FromLTEP { get; set; }
+        public int FromLtep { get; set; }
 
         [JsonProperty("fromPex")]
-        public int FromPEX { get; set; }
+        public int FromPex { get; set; }
 
         [JsonProperty("fromTracker")]
         public int FromTracker { get; set; }
@@ -311,7 +308,7 @@ namespace Transmission.NetCore.Client.Models
         public string Announce { get; set; }
 
         [JsonProperty("id")]
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         [JsonProperty("scrape")]
         public string Scrape { get; set; }
@@ -348,7 +345,7 @@ namespace Transmission.NetCore.Client.Models
         public int LastAnnouncePeerCount { get; set; }
 
         [JsonProperty("id")]
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         [JsonProperty("lastAnnounceResult")]
         public string LastAnnounceResult { get; set; }
